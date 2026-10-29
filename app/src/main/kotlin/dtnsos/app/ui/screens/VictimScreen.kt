@@ -207,7 +207,7 @@ fun VictimScreen(
                 locationBuffer.saveLocation(latitude, longitude, locationSource)
                 onBroadcastSos(selectedTriage, headCount.toUByte(), freeText, latitude, longitude)
             },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier
                 .fillMaxWidth()
