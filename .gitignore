@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+*/build/
+.kotlin/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Local configuration (SDK path, credentials)
+local.properties
+
+# Build artifacts
+*.apk
+*.aab
+app/build/
+core/build/
+
+# Keystores
+*.jks
+*.keystore
+
+# Log files
+*.log
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs

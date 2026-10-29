@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Permissions verified against:
+    https://developer.android.com/reference/android/Manifest.permission
+    https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
+    https://developer.android.com/guide/components/foreground-services (targetSdk 34+)
+
+    Split:
+      API 26-30: ACCESS_FINE_LOCATION + location service ON required for BLE scanning.
+      API 31   : ACCESS_FINE_LOCATION still needed for BLE scan if neverForLocation is not set.
+      API 31+  : BLUETOOTH_ADVERTISE, BLUETOOTH_SCAN (neverForLocation), BLUETOOTH_CONNECT.
+      API 33+  : POST_NOTIFICATIONS required for foreground service notification.
+      API 34+  : foregroundServiceType="connectedDevice" for BLE FGS.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Location — required on API ≤ 31 for BLE scanning -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- BLE — API 12+ (S) -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s"
+        xmlns:tools="http://schemas.android.com/tools" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s"
+        xmlns:tools="http://schemas.android.com/tools" />
+    <!-- BLUETOOTH_CONNECT: needed for some BluetoothAdapter queries on API 31+ -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"
+        tools:targetApi="s"
+        xmlns:tools="http://schemas.android.com/tools" />
+
+    <!-- Notifications — required on API 33+ for foreground service notification -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Foreground service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!--
+        foregroundServiceType "connectedDevice" covers BLE advertiser/scanner.
+        Verified at: https://developer.android.com/about/versions/14/changes/fgs-types-required
+        Required from targetSdk 34+.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+
+    <!-- Internet for Gateway MQTT upload (M6) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- BLE hardware requirement — soft, since we degrade gracefully. -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <application
+        android:label="DTN-SOS"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/Theme.DtnSos"
+        android:supportsRtl="true"
+        android:allowBackup="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            BLE Foreground Service — declared for M3.
+            foregroundServiceType="connectedDevice" required from targetSdk 34+.
+            The service does NOT make GATT connections; "connectedDevice" is the
+            correct type for BLE advertising and scanning per the Android docs.
+        -->
+        <service
+            android:name=".service.BleForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+
+    </application>
+</manifest>
