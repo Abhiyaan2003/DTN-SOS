@@ -1,5 +1,8 @@
 package dtnsos.app.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,13 +14,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dtnsos.app.location.LocationBuffer
+import dtnsos.app.ui.theme.DarkGlass
 import dtnsos.core.TriageLevel
+
+// ─── Shape constants ──────────────────────────────────────────────────────────
+private val CardShapeHero     = RoundedCornerShape(28.dp)
+private val CardShapeStandard = RoundedCornerShape(20.dp)
+private val PillShape         = RoundedCornerShape(999.dp)
 
 @Composable
 fun VictimScreen(
@@ -25,16 +35,29 @@ fun VictimScreen(
     heldCount: Int,
     lastEvent: String
 ) {
-    val context = LocalContext.current
-    val locationBuffer = remember { LocationBuffer(context) }
-    val initialCached = remember { locationBuffer.getLastKnownLocation() }
+    val context         = LocalContext.current
+    val locationBuffer  = remember { LocationBuffer(context) }
+    val initialCached   = remember { locationBuffer.getLastKnownLocation() }
 
-    var selectedTriage by remember { mutableStateOf(TriageLevel.CRITICAL) }
-    var headCount by remember { mutableIntStateOf(1) }
-    var freeText by remember { mutableStateOf("EMERGENCY HELP") }
-    var latitude by remember { mutableDoubleStateOf(initialCached.latitude) }
-    var longitude by remember { mutableDoubleStateOf(initialCached.longitude) }
-    var locationSource by remember { mutableStateOf(initialCached.source) }
+    var selectedTriage  by remember { mutableStateOf(TriageLevel.CRITICAL) }
+    var headCount       by remember { mutableIntStateOf(1) }
+    var freeText        by remember { mutableStateOf("EMERGENCY HELP") }
+    var latitude        by remember { mutableDoubleStateOf(initialCached.latitude) }
+    var longitude       by remember { mutableDoubleStateOf(initialCached.longitude) }
+    var locationSource  by remember { mutableStateOf(initialCached.source) }
+
+    // TextField color preset reused on all fields
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor   = DarkGlass.Accent,
+        unfocusedBorderColor = DarkGlass.BorderSubtle,
+        cursorColor          = DarkGlass.Accent,
+        focusedLabelColor    = DarkGlass.TextSecondary,
+        unfocusedLabelColor  = DarkGlass.TextTertiary,
+        focusedTextColor     = DarkGlass.TextPrimary,
+        unfocusedTextColor   = DarkGlass.TextPrimary,
+        focusedContainerColor   = DarkGlass.Surface2,
+        unfocusedContainerColor = DarkGlass.Surface2,
+    )
 
     Column(
         modifier = Modifier
@@ -42,187 +65,287 @@ fun VictimScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth()
+
+        // ── Hero SOS card ─────────────────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CardShapeHero)
+                .background(DarkGlass.Surface1)
+                .border(1.dp, DarkGlass.BorderSubtle, CardShapeHero)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint     = DarkGlass.Accent,
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Spacer(Modifier.width(10.dp))
                     Text(
-                        "Victim SOS Broadcast",
-                        style = MaterialTheme.typography.titleLarge,
+                        text       = "Victim SOS broadcast",
+                        style      = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onErrorContainer
+                        color      = DarkGlass.TextPrimary,
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
                 Text(
-                    "Broadcasts connectionless BLE packets without cellular towers or internet.",
+                    text  = "Broadcasts connectionless BLE packets without cellular towers or internet.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onErrorContainer
+                    color = DarkGlass.TextSecondary,
                 )
             }
         }
 
-        // Last Known Location Buffer Card
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth()
+        // ── Location buffer card ──────────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CardShapeStandard)
+                .background(DarkGlass.Surface2)
+                .border(1.dp, DarkGlass.BorderSubtle, CardShapeStandard)
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+                    Icon(
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint     = DarkGlass.Info,
+                        modifier = Modifier.size(18.dp),
+                    )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        "Last Known Location Buffer",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                        text       = "Last known location buffer",
+                        style      = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color      = DarkGlass.TextPrimary,
                     )
                 }
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(6.dp))
                 Text(
-                    "Active fallback: $locationSource\nCoordinates: ${"%.5f".format(latitude)}, ${"%.5f".format(longitude)}",
+                    text  = "Active fallback: $locationSource",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = DarkGlass.TextSecondary,
+                )
+                Text(
+                    text  = "Coordinates: ${"%.5f".format(latitude)}, ${"%.5f".format(longitude)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DarkGlass.TextSecondary,
                 )
             }
         }
 
-        // Triage Level Selection
-        Text("Triage Priority", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TriageLevel.entries.forEach { level ->
-                FilterChip(
-                    selected = selectedTriage == level,
-                    onClick = { selectedTriage = level },
-                    label = { Text(level.name) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        // Headcount
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("People in need: $headCount", style = MaterialTheme.typography.titleMedium)
-            Row {
-                FilledTonalButton(
-                    onClick = { if (headCount > 1) headCount-- },
-                    contentPadding = PaddingValues(horizontal = 12.dp)
-                ) { Text("-", fontSize = 20.sp) }
-                Spacer(Modifier.width(8.dp))
-                FilledTonalButton(
-                    onClick = { if (headCount < 50) headCount++ },
-                    contentPadding = PaddingValues(horizontal = 12.dp)
-                ) { Text("+", fontSize = 20.sp) }
-            }
-        }
-
-        // Message
-        OutlinedTextField(
-            value = freeText,
-            onValueChange = { if (it.length <= 25) freeText = it },
-            label = { Text("Message (max 25 chars)") },
-            supportingText = { Text("${freeText.length} / 25") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+        // ── Triage selector ───────────────────────────────────────────────────
+        Text(
+            text       = "Triage priority",
+            style      = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color      = DarkGlass.TextPrimary,
+            modifier   = Modifier.align(Alignment.Start),
         )
 
-        // Coordinates Input + Buffer Update
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(PillShape)
+                .background(DarkGlass.Surface2)
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
+        ) {
+            TriageLevel.entries.forEach { level ->
+                val isSelected = selectedTriage == level
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(PillShape)
+                        .background(if (isSelected) DarkGlass.Cream else Color.Transparent)
+                        .clickable { selectedTriage = level }
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text       = level.name,
+                        color      = if (isSelected) DarkGlass.OnCream else DarkGlass.TextSecondary,
+                        fontSize   = 12.sp,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                    )
+                }
+            }
+        }
+
+        // ── Headcount ─────────────────────────────────────────────────────────
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(PillShape)
+                .background(DarkGlass.Surface2)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically,
+        ) {
+            Text(
+                text  = "People in need: $headCount",
+                style = MaterialTheme.typography.titleMedium,
+                color = DarkGlass.TextPrimary,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Minus button
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(PillShape)
+                        .background(DarkGlass.Surface3)
+                        .clickable { if (headCount > 1) headCount-- },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(text = "−", color = DarkGlass.TextPrimary, fontSize = 20.sp)
+                }
+                // Plus button
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(PillShape)
+                        .background(DarkGlass.Surface3)
+                        .clickable { if (headCount < 50) headCount++ },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(text = "+", color = DarkGlass.TextPrimary, fontSize = 20.sp)
+                }
+            }
+        }
+
+        // ── Message field ─────────────────────────────────────────────────────
+        OutlinedTextField(
+            value         = freeText,
+            onValueChange = { if (it.length <= 25) freeText = it },
+            label         = { Text("Message (max 25 chars)") },
+            supportingText = { Text("${freeText.length} / 25", color = DarkGlass.TextTertiary) },
+            modifier      = Modifier.fillMaxWidth(),
+            singleLine    = true,
+            colors        = textFieldColors,
+        )
+
+        // ── Coordinate fields ─────────────────────────────────────────────────
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
-                value = latitude.toString(),
+                value         = latitude.toString(),
                 onValueChange = {
                     it.toDoubleOrNull()?.let { v ->
-                        latitude = v
+                        latitude       = v
                         locationSource = "User Input / Manual Fix"
                         locationBuffer.saveLocation(latitude, longitude, locationSource)
                     }
                 },
-                label = { Text("Latitude") },
-                modifier = Modifier.weight(1f)
+                label    = { Text("Latitude") },
+                modifier = Modifier.weight(1f),
+                colors   = textFieldColors,
             )
             OutlinedTextField(
-                value = longitude.toString(),
+                value         = longitude.toString(),
                 onValueChange = {
                     it.toDoubleOrNull()?.let { v ->
-                        longitude = v
+                        longitude      = v
                         locationSource = "User Input / Manual Fix"
                         locationBuffer.saveLocation(latitude, longitude, locationSource)
                     }
                 },
-                label = { Text("Longitude") },
-                modifier = Modifier.weight(1f)
+                label    = { Text("Longitude") },
+                modifier = Modifier.weight(1f),
+                colors   = textFieldColors,
             )
         }
 
-        // Presets quick-bar
+        // ── Preset buttons ────────────────────────────────────────────────────
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             OutlinedButton(
                 onClick = {
-                    latitude = 22.5726
-                    longitude = 88.3639
-                    locationSource = "Disaster Zone (Kolkata Preset)"
+                    latitude       = 22.5726
+                    longitude      = 88.3639
+                    locationSource = "Disaster zone (Kolkata preset)"
                     locationBuffer.saveLocation(latitude, longitude, locationSource)
                 },
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(4.dp)
+                modifier     = Modifier.weight(1f),
+                shape        = PillShape,
+                border       = androidx.compose.foundation.BorderStroke(1.dp, DarkGlass.BorderStrong),
+                colors       = ButtonDefaults.outlinedButtonColors(contentColor = DarkGlass.TextSecondary),
+                contentPadding = PaddingValues(vertical = 10.dp),
             ) {
-                Text("Kolkata Preset", fontSize = 12.sp)
+                Text("Kolkata preset", fontSize = 12.sp)
             }
             OutlinedButton(
                 onClick = {
-                    latitude = 28.6139
-                    longitude = 77.2090
-                    locationSource = "Disaster Zone (Delhi Preset)"
+                    latitude       = 28.6139
+                    longitude      = 77.2090
+                    locationSource = "Disaster zone (Delhi preset)"
                     locationBuffer.saveLocation(latitude, longitude, locationSource)
                 },
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(4.dp)
+                modifier     = Modifier.weight(1f),
+                shape        = PillShape,
+                border       = androidx.compose.foundation.BorderStroke(1.dp, DarkGlass.BorderStrong),
+                colors       = ButtonDefaults.outlinedButtonColors(contentColor = DarkGlass.TextSecondary),
+                contentPadding = PaddingValues(vertical = 10.dp),
             ) {
-                Text("Delhi Preset", fontSize = 12.sp)
+                Text("Delhi preset", fontSize = 12.sp)
             }
         }
 
-        // BIG RED SOS BUTTON
+        // ── SOS broadcast button ──────────────────────────────────────────────
         Button(
             onClick = {
-                // Ensure current location is saved in buffer before broadcasting
                 locationBuffer.saveLocation(latitude, longitude, locationSource)
                 onBroadcastSos(selectedTriage, headCount.toUByte(), freeText, latitude, longitude)
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
-            shape = RoundedCornerShape(24.dp),
+            colors  = ButtonDefaults.buttonColors(containerColor = DarkGlass.Accent),
+            shape   = CardShapeHero,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp)
+                .height(72.dp),
         ) {
-            Text("BROADCAST EMERGENCY SOS", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(
+                text       = "Broadcast emergency SOS",
+                fontSize   = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color      = DarkGlass.TextPrimary,
+            )
         }
 
-        // Status Card
-        Card(modifier = Modifier.fillMaxWidth()) {
+        // ── Broadcast status card ─────────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CardShapeStandard)
+                .background(DarkGlass.Surface1)
+                .border(1.dp, DarkGlass.BorderSubtle, CardShapeStandard)
+        ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Broadcast Status", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    text  = "Broadcast status",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = DarkGlass.TextSecondary,
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text("Packets in buffer:", color = DarkGlass.TextSecondary, fontSize = 13.sp)
+                    Text("$heldCount", color = DarkGlass.TextPrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                }
                 Spacer(Modifier.height(4.dp))
-                Text("Packets in local buffer: $heldCount")
-                Text("Last event: $lastEvent")
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text("Last event:", color = DarkGlass.TextSecondary, fontSize = 13.sp)
+                    Text(lastEvent, color = DarkGlass.TextPrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                }
             }
         }
     }

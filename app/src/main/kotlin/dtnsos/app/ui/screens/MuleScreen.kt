@@ -1,6 +1,8 @@
 package dtnsos.app.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,13 +14,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dtnsos.app.ui.theme.DarkGlass
+import dtnsos.app.ui.theme.DtnType
 import dtnsos.core.BufferedPacket
 import dtnsos.core.TriageLevel
+
+// ─── Shape constants ──────────────────────────────────────────────────────────
+private val CardShapeHero     = RoundedCornerShape(28.dp)
+private val CardShapeStandard = RoundedCornerShape(20.dp)
+private val PillShape         = RoundedCornerShape(999.dp)
 
 @Composable
 fun MuleScreen(
@@ -30,227 +40,300 @@ fun MuleScreen(
     onClearBuffer: () -> Unit
 ) {
     var selectedPacketForDetails by remember { mutableStateOf<BufferedPacket?>(null) }
-    var showClearConfirm by remember { mutableStateOf(false) }
+    var showClearConfirm         by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier            = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // Mule Header Card
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth()
+
+        // ── Header (hero) card ────────────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CardShapeHero)
+                .background(DarkGlass.Surface1)
+                .border(1.dp, DarkGlass.BorderSubtle, CardShapeHero)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(20.dp)) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier              = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment     = Alignment.CenterVertically,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = null,
+                            tint     = DarkGlass.TextSecondary,
+                            modifier = Modifier.size(22.dp),
+                        )
+                        Spacer(Modifier.width(10.dp))
                         Text(
-                            "Mule Relay Node",
-                            style = MaterialTheme.typography.titleLarge,
+                            text       = "Mule relay node",
+                            style      = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color      = DarkGlass.TextPrimary,
                         )
                     }
-
-                    // Clear Buffer Button
+                    // Clear buffer button — ghost/outline with Negative border
                     OutlinedButton(
                         onClick = { showClearConfirm = true },
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                        shape   = PillShape,
+                        border  = androidx.compose.foundation.BorderStroke(1.dp, DarkGlass.Negative),
+                        colors  = ButtonDefaults.outlinedButtonColors(contentColor = DarkGlass.Negative),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                     ) {
-                        Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Clear Buffer")
+                        Text("Clear buffer", fontSize = 13.sp)
                     }
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
                 Text(
-                    "Passively scans for SOS packets, adopts tokens via spray-and-wait, and rotates advertisements.",
+                    text  = "Passively scans for SOS packets, adopts tokens via spray-and-wait, and rotates advertisements.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = DarkGlass.TextSecondary,
                 )
             }
         }
 
-        // Buffer Stats Card
-        Card(modifier = Modifier.fillMaxWidth()) {
+        // ── Buffer stats card (3-column) ──────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CardShapeStandard)
+                .background(DarkGlass.Surface1)
+                .border(1.dp, DarkGlass.BorderSubtle, CardShapeStandard)
+        ) {
             Row(
-                modifier = Modifier
+                modifier              = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment     = Alignment.CenterVertically,
             ) {
-                Column {
-                    Text("Held Packets", style = MaterialTheme.typography.labelMedium)
-                    Text("$heldCount / 500", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                }
-                Column {
-                    Text("Scanner", style = MaterialTheme.typography.labelMedium)
-                    Text(scanStatus, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                }
-                Column {
-                    Text("Advertiser", style = MaterialTheme.typography.labelMedium)
-                    Text(advStatus, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                }
-            }
-        }
-
-        // Live Activity Event Line
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    lastEvent,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1
+                StatColumn(label = "Held packets", value = "$heldCount / 500")
+                // Vertical divider
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(36.dp)
+                        .background(DarkGlass.BorderSubtle)
                 )
+                StatColumn(label = "Scanner", value = scanStatus)
+                // Vertical divider
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(36.dp)
+                        .background(DarkGlass.BorderSubtle)
+                )
+                StatColumn(label = "Advertiser", value = advStatus)
             }
         }
 
-        // Section Title: Held Packets
+        // ── Live event pill ───────────────────────────────────────────────────
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(PillShape)
+                .background(DarkGlass.Surface2)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Held SOS Packets (${heldPackets.size})", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text("Tap to inspect message", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
-        }
-
-        if (heldPackets.isEmpty()) {
+            // Info dot
             Box(
                 modifier = Modifier
+                    .size(8.dp)
+                    .clip(PillShape)
+                    .background(DarkGlass.Info)
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text     = lastEvent,
+                style    = MaterialTheme.typography.bodySmall,
+                color    = DarkGlass.TextSecondary,
+                maxLines = 1,
+            )
+        }
+
+        // ── Section header ────────────────────────────────────────────────────
+        Row(
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically,
+        ) {
+            Text(
+                text       = "Held SOS packets (${heldPackets.size})",
+                style      = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color      = DarkGlass.TextPrimary,
+            )
+            Text(
+                text  = "Tap to inspect",
+                style = MaterialTheme.typography.bodySmall,
+                color = DarkGlass.TextTertiary,
+            )
+        }
+
+        // ── Empty state / packet list ─────────────────────────────────────────
+        if (heldPackets.isEmpty()) {
+            Box(
+                modifier         = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "No packets in buffer.\nWaiting for nearby SOS broadcasts...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.outline,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    text      = "No packets in buffer.\nWaiting for nearby SOS broadcasts…",
+                    style     = MaterialTheme.typography.bodyMedium,
+                    color     = DarkGlass.TextSecondary,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 )
             }
         } else {
             LazyColumn(
-                modifier = Modifier
+                modifier            = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(heldPackets) { item ->
                     PacketItemCard(
-                        item = item,
-                        onClick = { selectedPacketForDetails = item }
+                        item    = item,
+                        onClick = { selectedPacketForDetails = item },
                     )
                 }
             }
         }
     }
 
-    // Packet Inspection Dialog
+    // ── Packet inspection dialog ──────────────────────────────────────────────
     selectedPacketForDetails?.let { item ->
-        val p = item.packet
+        val p      = item.packet
         val triage = TriageLevel.fromCode(p.triage)
 
         AlertDialog(
             onDismissRequest = { selectedPacketForDetails = null },
-            icon = { Icon(Icons.Default.Email, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-            title = { Text("SOS Message Inspection") },
+            containerColor   = DarkGlass.Surface2,
+            icon             = {
+                Icon(Icons.Default.Email, contentDescription = null, tint = DarkGlass.TextPrimary)
+            },
+            title = {
+                Text("SOS message inspection", color = DarkGlass.TextPrimary, fontWeight = FontWeight.SemiBold)
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(DarkGlass.Surface3)
+                            .padding(12.dp)
                     ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text("DECODED MESSAGE", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        Column {
                             Text(
-                                text = p.messageText().ifEmpty { "(No text content)" },
-                                style = MaterialTheme.typography.titleMedium,
+                                text       = "Decoded message",
+                                style      = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color      = DarkGlass.TextSecondary,
+                            )
+                            Text(
+                                text       = p.messageText().ifEmpty { "(No text content)" },
+                                style      = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color      = DarkGlass.TextPrimary,
                             )
                         }
                     }
-
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Packet ID:", fontWeight = FontWeight.SemiBold)
-                        Text(p.packetIdHex(), fontFamily = FontFamily.Monospace, fontSize = 12.sp)
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Triage Priority:", fontWeight = FontWeight.SemiBold)
-                        Text("${triage.name} (${triage.code})", fontWeight = FontWeight.Bold)
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Headcount:", fontWeight = FontWeight.SemiBold)
-                        Text("${p.headCount} people")
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Remaining Tokens:", fontWeight = FontWeight.SemiBold)
-                        Text("${item.tokens} tokens")
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Coordinates:", fontWeight = FontWeight.SemiBold)
-                        Text("${"%.5f".format(p.latitudeDegrees)}, ${"%.5f".format(p.longitudeDegrees)}")
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("TTL:", fontWeight = FontWeight.SemiBold)
-                        Text("${p.ttlHours} hours")
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("State:", fontWeight = FontWeight.SemiBold)
-                        Text(item.state.name, fontWeight = FontWeight.Bold)
-                    }
+                    DialogRow("Packet ID:", p.packetIdHex(), mono = true)
+                    DialogRow("Triage priority:", "${triage.name} (${triage.code})")
+                    DialogRow("Headcount:", "${p.headCount} people")
+                    DialogRow("Remaining tokens:", "${item.tokens} tokens")
+                    DialogRow("Coordinates:", "${"%.5f".format(p.latitudeDegrees)}, ${"%.5f".format(p.longitudeDegrees)}")
+                    DialogRow("TTL:", "${p.ttlHours} hours")
+                    DialogRow("State:", item.state.name)
                 }
             },
             confirmButton = {
                 TextButton(onClick = { selectedPacketForDetails = null }) {
-                    Text("Close")
+                    Text("Close", color = DarkGlass.TextPrimary)
                 }
-            }
+            },
         )
     }
 
-    // Clear Buffer Confirmation Dialog
+    // ── Clear buffer confirmation dialog ──────────────────────────────────────
     if (showClearConfirm) {
         AlertDialog(
             onDismissRequest = { showClearConfirm = false },
-            title = { Text("Clear All Packets?") },
-            text = { Text("This will purge all held packets from the buffer, clear the duplicate cache, and reset the broadcast queue.") },
+            containerColor   = DarkGlass.Surface2,
+            title = {
+                Text("Clear all packets?", color = DarkGlass.TextPrimary, fontWeight = FontWeight.SemiBold)
+            },
+            text = {
+                Text(
+                    text  = "This will purge all held packets from the buffer, clear the duplicate cache, and reset the broadcast queue.",
+                    color = DarkGlass.TextSecondary,
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
                         onClearBuffer()
                         showClearConfirm = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DarkGlass.Negative,
+                        contentColor   = DarkGlass.OnCream,
+                    ),
                 ) {
-                    Text("Clear Everything")
+                    Text("Clear everything")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showClearConfirm = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = DarkGlass.TextSecondary)
                 }
-            }
+            },
+        )
+    }
+}
+
+// ─── Helper composables ───────────────────────────────────────────────────────
+
+@Composable
+private fun StatColumn(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text  = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = DarkGlass.TextSecondary,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text       = value,
+            style      = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color      = DarkGlass.TextPrimary,
+        )
+    }
+}
+
+@Composable
+private fun DialogRow(label: String, value: String, mono: Boolean = false) {
+    Row(
+        modifier              = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(label, fontWeight = FontWeight.SemiBold, color = DarkGlass.TextSecondary, fontSize = 13.sp)
+        Text(
+            text  = value,
+            style = if (mono) DtnType.ids else DtnType.body,
+            color = DarkGlass.TextPrimary,
         )
     }
 }
@@ -260,74 +343,74 @@ fun PacketItemCard(
     item: BufferedPacket,
     onClick: () -> Unit
 ) {
-    val p = item.packet
+    val p      = item.packet
     val triage = TriageLevel.fromCode(p.triage)
 
-    val triageColor = when (triage) {
-        TriageLevel.CRITICAL -> MaterialTheme.colorScheme.error
-        TriageLevel.TRAPPED -> Color(0xFFE65100) // Deep orange
-        TriageLevel.INJURED -> Color(0xFFF57C00) // Orange
-        TriageLevel.SUPPLIES -> Color(0xFF388E3C) // Green
+    val triageColor: Color = when (triage) {
+        TriageLevel.CRITICAL -> DarkGlass.Negative            // #F26D6D
+        TriageLevel.TRAPPED  -> Color(0xFFE65100)             // deep orange
+        TriageLevel.INJURED  -> DarkGlass.Warning             // #F5B84A
+        TriageLevel.SUPPLIES -> DarkGlass.Positive            // #4ADE80
     }
 
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(DarkGlass.Surface1)
+            .border(1.dp, DarkGlass.BorderSubtle, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically,
             ) {
-                // Triage badge
-                Surface(
-                    color = triageColor.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(6.dp)
+                // Triage badge pill
+                Box(
+                    modifier = Modifier
+                        .clip(PillShape)
+                        .background(triageColor.copy(alpha = 0.20f))
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        triage.name,
-                        color = triageColor,
-                        style = MaterialTheme.typography.labelMedium,
+                        text       = triage.name,
+                        color      = triageColor,
+                        style      = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                     )
                 }
-
-                Text(
-                    "Tokens: ${item.tokens}",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row {
+                    Text("Tokens: ", style = MaterialTheme.typography.labelMedium, color = DarkGlass.TextSecondary)
+                    Text("${item.tokens}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = DarkGlass.TextPrimary)
+                }
             }
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text       = p.messageText().ifEmpty { "(No text message)" },
+                style      = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                color      = DarkGlass.TextPrimary,
+            )
 
             Spacer(Modifier.height(6.dp))
 
-            // Message text preview
-            Text(
-                text = p.messageText().ifEmpty { "(No text message)" },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(Modifier.height(4.dp))
-
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier              = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    "ID: ${p.packetIdHex()}",
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.outline
+                    text  = "ID: ${p.packetIdHex()}",
+                    style = DtnType.ids,
+                    color = DarkGlass.TextTertiary,
                 )
                 Text(
-                    "${"%.4f".format(p.latitudeDegrees)}, ${"%.4f".format(p.longitudeDegrees)}",
+                    text     = "${"%.4f".format(p.latitudeDegrees)}, ${"%.4f".format(p.longitudeDegrees)}",
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.outline
+                    color    = DarkGlass.TextTertiary,
                 )
             }
         }

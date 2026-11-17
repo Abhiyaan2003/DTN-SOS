@@ -44,6 +44,9 @@
     -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
+    <!-- Haptic feedback for emergency UI alerts -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <!-- Internet for Gateway MQTT upload (M6) -->
     <uses-permission android:name="android.permission.INTERNET" />
 

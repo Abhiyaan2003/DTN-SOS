@@ -47,6 +47,16 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    lint {
+        disable += "InvalidFragmentVersionForActivityResult"
+    }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -89,4 +99,10 @@ dependencies {
     implementation(libs.compose.icons.extended)
     implementation(libs.compose.foundation)
     debugImplementation(libs.compose.ui.tooling)
+
+    // Unit Tests
+    testImplementation(libs.junit5.api)
+    testRuntimeOnly(libs.junit5.engine)
+    testRuntimeOnly(libs.junit.platform)
+    testImplementation(libs.kotlinx.coroutines)
 }

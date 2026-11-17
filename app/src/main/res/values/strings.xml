@@ -1,0 +1,221 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">DTN-SOS</string>
+    <string name="wordmark_dtn">dtn</string>
+    <string name="wordmark_dot">.</string>
+
+    <!-- Status Pill -->
+    <string name="status_listening">Listening</string>
+    <string name="status_paused">Paused</string>
+    <string name="status_broadcasting">Broadcasting</string>
+    <string name="status_carry_only">Carry only</string>
+    <string name="status_gateway">Gateway</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_carrying">Carrying</string>
+    <string name="nav_settings">Settings</string>
+    <string name="cd_send_sos">Send SOS</string>
+
+    <!-- Home: Mule -->
+    <string name="home_hero_label_carried">Packets carried</string>
+    <string name="home_hero_sub_waiting">Waiting to meet a gateway</string>
+    <string name="home_hero_sub_paused">Paused. Packets are kept until they expire.</string>
+    <string name="home_carry_only_sub">This phone can carry messages but can’t send an SOS.</string>
+    <string name="stat_nearby_phones">Nearby phones</string>
+    <string name="stat_last_contact">Last contact</string>
+    <string name="stat_battery_use">Battery use</string>
+    <string name="action_stop_listening">Stop listening</string>
+    <string name="action_start_listening">Start listening</string>
+    <string name="link_carrying_title">Carrying</string>
+    <string name="link_carrying_sub">Packets this phone holds for others.</string>
+
+    <!-- Home: Gateway -->
+    <string name="home_hero_label_received">Packets received</string>
+    <string name="home_gateway_mqtt_connected">MQTT connected · last sync %s</string>
+    <string name="home_gateway_mqtt_connecting">MQTT connecting…</string>
+    <string name="home_gateway_mqtt_offline">Offline. Packets are queued.</string>
+    <string name="stat_verified">Verified</string>
+    <string name="stat_unverified">Unverified</string>
+    <string name="stat_duplicates_dropped">Duplicates dropped</string>
+    <string name="card_queued_title">Queued for upload</string>
+    <string name="card_queued_body">%1$d packets waiting. Gateway doesn’t send SOS packets.</string>
+    <string name="card_queued_body_zero">0 packets waiting.</string>
+
+    <!-- Home: SOS Active -->
+    <string name="sos_active_title">Phones carrying your SOS</string>
+    <string name="sos_active_caption">Up to 8 copies can exist. Delivery isn’t confirmed.</string>
+    <string name="key_sent">Sent</string>
+    <string name="key_lifetime_left">Lifetime left</string>
+    <string name="key_location">Location</string>
+    <string name="key_message">Message</string>
+    <string name="sos_active_helper">Keep this phone on and charged if you can. Low-power mode lowers scan rate to save battery.</string>
+    <string name="action_cancel_sos">I’m safe – cancel SOS</string>
+    <string name="suffix_approximate"> (approximate)</string>
+
+    <!-- Compose SOS -->
+    <string name="compose_title">Send SOS</string>
+    <string name="compose_category_label">Category</string>
+    <string name="compose_people_label">People in need</string>
+    <string name="compose_severity_label">Severity</string>
+    <string name="compose_message_placeholder">Short message</string>
+    <string name="compose_location_acquiring">Getting your location…</string>
+    <string name="compose_location_ready">Location added automatically: %s</string>
+    <string name="compose_location_approximate">Using last known location from %s ago</string>
+    <string name="compose_location_unavailable">No location yet</string>
+    <string name="action_enter_manually">Enter manually</string>
+    <string name="action_broadcast_sos">Broadcast SOS</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="error_broadcast_failed">Couldn’t start broadcasting. Check Bluetooth and try again.</string>
+    <string name="manual_location_title">Enter location coordinates</string>
+    <string name="label_latitude">Latitude (-90 to 90)</string>
+    <string name="label_longitude">Longitude (-180 to 180)</string>
+    <string name="action_save_location">Save location</string>
+
+    <!-- Carrying -->
+    <string name="carrying_title">Carrying</string>
+    <string name="carrying_helper">Newest first. Expired packets drop off automatically.</string>
+    <string name="carrying_empty_title">No packets carried yet</string>
+    <string name="carrying_empty_listening">Listening for nearby phones.</string>
+    <string name="carrying_empty_paused">Start listening to carry messages.</string>
+    <string name="tag_spray">Spray %d</string>
+    <string name="tag_wait">Wait</string>
+    <string name="tag_delivered">Delivered</string>
+
+    <!-- Packet Detail Sheet -->
+    <string name="key_message_id">Message ID</string>
+    <string name="key_severity">Severity</string>
+    <string name="key_age">Age</string>
+    <string name="key_copies_can_pass">Copies this phone can pass on</string>
+    <string name="key_signature">Signature</string>
+    <string name="sig_not_checked">Not checked on this phone</string>
+    <string name="copies_spraying">%d (spraying)</string>
+    <string name="copies_waiting">1 (waiting for gateway)</string>
+    <string name="copies_delivered">Delivered to a gateway</string>
+    <string name="action_done">Done</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="role_title">Role</string>
+    <string name="role_helper">Mule carries packets. Gateway sits at a relief camp.</string>
+    <string name="role_mule">Mule</string>
+    <string name="role_gateway">Gateway</string>
+    <string name="scan_title">Scan intensity</string>
+    <string name="scan_helper">Faster scanning finds more phones and uses more battery.</string>
+    <string name="scan_saver">Saver</string>
+    <string name="scan_balanced">Balanced</string>
+    <string name="scan_fast">Fast</string>
+    <string name="ttl_title">Default lifetime</string>
+    <string name="ttl_helper">How long your SOS is kept alive.</string>
+    <string name="ttl_24">24 h</string>
+    <string name="ttl_48">48 h</string>
+    <string name="haptics_title">Haptic feedback</string>
+    <string name="haptics_helper">Vibrate on taps, when you send an SOS, and when this phone meets another one.</string>
+    <string name="haptics_on">On</string>
+    <string name="haptics_off">Off</string>
+    <string name="info_card_title">Device &amp; network</string>
+    <string name="info_buffer">Buffer</string>
+    <string name="info_signing_key">Signing key</string>
+    <string name="info_bt5_broadcast">Bluetooth 5 broadcast</string>
+    <string name="value_supported">Supported</string>
+    <string name="value_not_supported">Not supported</string>
+    <string name="link_battery_help_title">Battery and background help</string>
+    <string name="link_battery_help_sub">Keep the app running reliably.</string>
+    <string name="toast_cancel_sos_first">Cancel your SOS before changing roles.</string>
+
+    <!-- Gateway Setup -->
+    <string name="gateway_setup_title">Gateway setup</string>
+    <string name="gateway_setup_helper">Gateways verify and forward SOS packets. Place this phone where it stays powered.</string>
+    <string name="label_gateway_name">Gateway name</string>
+    <string name="label_broker_address">Broker address</string>
+    <string name="label_access_token">Access token</string>
+    <string name="action_test_connection">Test connection</string>
+    <string name="action_save_gateway">Save and become a gateway</string>
+    <string name="status_connected">+ Connected</string>
+
+    <!-- Background Help -->
+    <string name="bg_help_title">Keep the app running</string>
+    <string name="bg_help_intro">Android restricts background Bluetooth and services. Complete these steps to ensure packets are carried.</string>
+    <string name="bg_step_notifications">Allow notifications</string>
+    <string name="bg_step_notifications_desc">Required to show foreground service alerts.</string>
+    <string name="bg_step_battery">Disable battery optimization</string>
+    <string name="bg_step_battery_desc">Allows background scanning without system throttling.</string>
+    <string name="bg_step_oem_title">Manufacturer optimizations</string>
+    <string name="bg_action_open">Open settings</string>
+    <string name="bg_status_done">Done</string>
+    <string name="bg_status_todo">To do</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_headline">Help can travel through other phones.</string>
+    <string name="onboarding_welcome_body">When networks fail, your phone carries SOS messages out of the disaster area. No internet or pairing needed.</string>
+    <string name="action_get_started">Get started</string>
+    <string name="onboarding_perm_title">Allow what the app needs</string>
+    <string name="onboarding_perm_helper">The first three are required for the network to work.</string>
+    <string name="perm_nearby_title">Nearby devices</string>
+    <string name="perm_nearby_reason">Send and receive SOS over Bluetooth.</string>
+    <string name="perm_location_title">Location</string>
+    <string name="perm_location_reason">Attach your position to an SOS.</string>
+    <string name="perm_background_title">Background activity</string>
+    <string name="perm_background_reason">Keep carrying messages when the screen is off.</string>
+    <string name="perm_notifications_title">Notifications (optional)</string>
+    <string name="perm_notifications_reason">Tell you when your SOS is carried.</string>
+    <string name="perm_required_note">Needed for the network to work.</string>
+    <string name="action_allow">Allow</string>
+    <string name="action_allowed">Allowed</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_back">Back</string>
+    <string name="onboarding_profile_title">About you</string>
+    <string name="onboarding_profile_helper">Rescuers see this only when you send an SOS.</string>
+    <string name="label_name">Full name</string>
+    <string name="label_phone">Phone number</string>
+    <string name="label_notes">Notes for rescuers (optional)</string>
+    <string name="profile_key_title">Your signing key</string>
+    <string name="profile_key_body">It’s created on this phone. Register it with a relief camp so gateways can verify your SOS.</string>
+    <string name="action_create_key_continue">Create key and continue</string>
+    <string name="profile_key_unregistered_warning">Not registered yet. Gateways can’t verify your SOS.</string>
+    <string name="error_name_required">Name is required</string>
+    <string name="error_phone_invalid">Enter a valid 7–15 digit phone number</string>
+    <string name="onboarding_ready_title">This phone is ready</string>
+    <string name="action_open_app">Open app</string>
+
+    <!-- Interrupts & Sheets -->
+    <string name="bt_off_title">Bluetooth is off</string>
+    <string name="bt_off_body">Your phone can’t send or carry SOS messages until Bluetooth is on.</string>
+    <string name="action_turn_on_bt">Turn on Bluetooth</string>
+    <string name="action_open_settings">Open settings</string>
+    <string name="unsupported_title">This phone can listen, not broadcast</string>
+    <string name="unsupported_body">Sending an SOS needs Bluetooth 5 extended advertising. You can still carry messages from other phones toward a gateway.</string>
+    <string name="action_continue_carry_only">Continue in carry-only mode</string>
+    <string name="action_see_supported_phones">See supported phones</string>
+    <string name="supported_phones_title">Supported phones</string>
+    <string name="supported_phones_body">DTN SOS uses Bluetooth 5 Advertising Extensions (LE Extended Advertising) to broadcast emergency packets without pairing.\n\nRequirements:\n• Android 8.0+ (API 26)\n• Hardware support for LE Extended Advertising\n• Minimum 154 byte advertising payload length</string>
+    <string name="low_battery_title">Battery at %d%%</string>
+    <string name="low_battery_body">Switch to Saver scanning to keep carrying messages longer. You’ll meet fewer phones.</string>
+    <string name="action_switch_to_saver">Switch to Saver</string>
+    <string name="action_keep_current_settings">Keep current settings</string>
+    <string name="stop_listening_title">Stop listening?</string>
+    <string name="stop_listening_body">While paused, this phone won’t pick up SOS messages from people nearby, so fewer messages get carried out. Packets you already hold are kept until they expire.</string>
+    <string name="action_keep_listening">Keep listening</string>
+    <string name="cancel_sos_title">Cancel your SOS?</string>
+    <string name="cancel_sos_body">This stops broadcasting from this phone. Phones that already carry your message may keep passing it on for a while.</string>
+    <string name="action_keep_broadcasting">Keep broadcasting</string>
+
+    <!-- Plurals -->
+    <plurals name="people_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
+    <plurals name="phones_count">
+        <item quantity="one">%d phone</item>
+        <item quantity="other">%d phones</item>
+    </plurals>
+    <plurals name="packets_count">
+        <item quantity="one">%d packet</item>
+        <item quantity="other">%d packets</item>
+    </plurals>
+    <plurals name="step_progress">
+        <item quantity="one">Step %1$d of %2$d</item>
+        <item quantity="other">Step %1$d of %2$d</item>
+    </plurals>
+</resources>
+
